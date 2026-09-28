@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head(${pageTitle})}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="page-heading">
+        <div>
+            <h1 class="h2 mb-1" th:text="${pageTitle}">Community Q&amp;A</h1>
+            <p class="mb-0" th:if="${mineView == null}">Questions from pet owners, answered by registered clinics.</p>
+            <p class="mb-0" th:if="${mineView != null}">Everything you've asked, with replies from clinics.</p>
+        </div>
+        <a sec:authorize="hasRole('PET_OWNER')" href="/inquiries/new" class="btn btn-brand"><i class="bi bi-plus-lg me-1"></i>Ask a new question</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <!-- Category filter (community board only) -->
+    <form th:if="${mineView == null}" th:action="@{/inquiries}" method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-6 col-md-4">
+            <label for="category" class="form-label">Filter by topic</label>
+            <select id="category" name="category" class="form-select" onchange="this.form.submit()">
+                <option value="">All topics</option>
+                <option th:each="c : ${categories}" th:value="${c}"
+                        th:text="${#strings.capitalizeWords(#strings.toLowerCase(#strings.replace(c,'_',' ')))}"
+                        th:selected="${c == selectedCategory}">Topic</option>
+            </select>
+        </div>
+        <div class="col-auto" th:if="${selectedCategory != null}">
+            <a href="/inquiries" class="btn btn-outline-green">Clear filter</a>
+        </div>
+    </form>
+
+    <div th:if="${!#lists.isEmpty(inquiries)}">
+        <th:block th:each="i : ${inquiries}">
+            <a th:replace="~{fragments/layout :: inquiryRow(${i})}"></a>
+        </th:block>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(inquiries)}">
+        <i class="bi bi-chat-square-text"></i>
+        <h3 class="h5 mt-2">No questions here yet</h3>
+        <p class="mb-3">When pet owners post questions, they show up on this board.</p>
+        <a sec:authorize="hasRole('PET_OWNER')" href="/inquiries/new" class="btn btn-brand">Ask a question</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

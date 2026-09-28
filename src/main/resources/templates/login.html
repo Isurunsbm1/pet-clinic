@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+    <th:block th:replace="{fragments/layout :: head('Login')}"></th:block>
+</head>
+<body>
+<div th:replace="{fragments/layout :: navbar}"></div>
+
+<main class="container py-4">
+    <div class="auth-card">
+        <h1 class="h3 mb-1">Welcome back</h1>
+        <p class="mb-4">Log in as a pet owner, an approved clinic, or the administrator.</p>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div th:if="${param.error != null and param.error[0] == 'disabled'}" class="alert alert-warning" role="alert">
+            <i class="bi bi-hourglass-split me-1"></i>
+            This account can't log in yet. Clinic accounts stay locked until an administrator approves the registration
+            request, or if it was rejected.
+        </div>
+        <div th:if="${param.error != null and param.error[0] != 'disabled'}" class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle me-1"></i>The email or password is incorrect.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="username" name="username" required autofocus
+                       autocomplete="username">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required
+                       autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-green w-100 btn-lg">Log in</button>
+        </form>
+
+        <hr class="my-4">
+        <p class="mb-2">New pet owner? <a href="/register/owner">Create an account</a></p>
+        <p class="mb-0">Own a clinic? <a href="/register/clinic">Request registration</a></p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

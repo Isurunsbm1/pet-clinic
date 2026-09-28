@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Admin dashboard')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="page-heading">
+        <div>
+            <h1 class="h2 mb-1">Administration</h1>
+            <p class="mb-0">Review clinic requests and manage everyone on the platform.</p>
+        </div>
+    </div>
+
+    <ul th:replace="~{fragments/layout :: adminTabs('dashboard')}"></ul>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${pendingCount}">0</div>
+                <div class="stat-label">Clinic requests waiting</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${approvedCount}">0</div>
+                <div class="stat-label">Approved clinics</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${ownerCount}">0</div>
+                <div class="stat-label">Pet owners</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${inquiryCount}">0</div>
+                <div class="stat-label">Questions asked</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h4 mb-3">Clinic registration requests</h2>
+
+    <div class="card-plain table-responsive" th:if="${!#lists.isEmpty(pendingClinics)}">
+        <table class="table table-vet">
+            <thead>
+            <tr>
+                <th>Clinic</th>
+                <th>Registration no.</th>
+                <th>Location</th>
+                <th>Contact</th>
+                <th>Requested</th>
+                <th class="text-end">Decision</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${pendingClinics}">
+                <td style="min-width:220px;">
+                    <strong th:text="${c.clinicName}">Clinic</strong>
+                    <div class="small text-muted" th:if="${!#strings.isEmpty(c.description)}" th:text="${#strings.abbreviate(c.description, 90)}">About</div>
+                </td>
+                <td th:text="${#strings.isEmpty(c.registrationNumber)} ? 'Not provided' : ${c.registrationNumber}">Reg</td>
+                <td>
+                    <span th:text="${c.city}">City</span>
+                    <div class="small text-muted" th:text="${c.address}">Address</div>
+                </td>
+                <td>
+                    <div th:text="${c.user.email}">email</div>
+                    <div class="small text-muted" th:text="${c.user.phone}">phone</div>
+                </td>
+                <td th:text="${#temporals.format(c.requestedAt, 'dd MMM yyyy')}">Date</td>
+                <td class="text-end text-nowrap">
+                    <form th:action="@{/admin/clinics/{id}/approve(id=${c.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-green"><i class="bi bi-check-lg me-1"></i>Approve</button>
+                    </form>
+                    <form th:action="@{/admin/clinics/{id}/reject(id=${c.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Reject this registration request?');">
+                        <button type="submit" class="btn btn-sm btn-outline-clay"><i class="bi bi-x-lg me-1"></i>Reject</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(pendingClinics)}">
+        <i class="bi bi-inbox"></i>
+        <h3 class="h5 mt-2">No requests waiting</h3>
+        <p class="mb-0">New clinic registration requests will show up here for your decision.</p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

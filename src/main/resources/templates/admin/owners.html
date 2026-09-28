@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Manage pet owners')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="page-heading">
+        <div>
+            <h1 class="h2 mb-1">Pet owners</h1>
+            <p class="mb-0">Update or remove pet owner accounts.</p>
+        </div>
+    </div>
+
+    <ul th:replace="~{fragments/layout :: adminTabs('owners')}"></ul>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="card-plain table-responsive" th:if="${!#lists.isEmpty(owners)}">
+        <table class="table table-vet">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>City</th>
+                <th>Questions</th>
+                <th>Joined</th>
+                <th class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${owners}">
+                <td><strong th:text="${o.user.fullName}">Name</strong></td>
+                <td>
+                    <div th:text="${o.user.email}">email</div>
+                    <div class="small text-muted" th:text="${o.user.phone}">phone</div>
+                </td>
+                <td th:text="${#strings.isEmpty(o.city)} ? '-' : ${o.city}">City</td>
+                <td th:text="${#lists.size(o.inquiries)}">0</td>
+                <td th:text="${#temporals.format(o.user.createdAt, 'dd MMM yyyy')}">Date</td>
+                <td class="text-end text-nowrap">
+                    <a th:href="@{/admin/owners/{id}/edit(id=${o.id})}" class="btn btn-sm btn-outline-green"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    <form th:action="@{/admin/owners/{id}/delete(id=${o.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Delete this pet owner and all of their questions? This cannot be undone.');">
+                        <button type="submit" class="btn btn-sm btn-outline-clay" title="Delete pet owner"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(owners)}">
+        <i class="bi bi-people"></i>
+        <h3 class="h5 mt-2">No pet owners yet</h3>
+        <p class="mb-0">Accounts appear here as soon as pet owners sign up.</p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

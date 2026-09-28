@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Manage clinics')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="page-heading">
+        <div>
+            <h1 class="h2 mb-1">Clinics</h1>
+            <p class="mb-0">Approve, update or remove any clinic on the platform.</p>
+        </div>
+    </div>
+
+    <ul th:replace="~{fragments/layout :: adminTabs('clinics')}"></ul>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="card-plain table-responsive" th:if="${!#lists.isEmpty(clinics)}">
+        <table class="table table-vet">
+            <thead>
+            <tr>
+                <th>Clinic</th>
+                <th>Location</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${clinics}">
+                <td style="min-width:200px;">
+                    <strong th:text="${c.clinicName}">Clinic</strong>
+                    <div class="small text-muted" th:if="${!#strings.isEmpty(c.registrationNumber)}" th:text="'Reg. ' + ${c.registrationNumber}">Reg</div>
+                </td>
+                <td>
+                    <span th:text="${c.city}">City</span>
+                    <div class="small text-muted" th:text="${c.address}">Address</div>
+                </td>
+                <td>
+                    <div th:text="${c.user.email}">email</div>
+                    <div class="small text-muted" th:text="${c.user.phone}">phone</div>
+                </td>
+                <td><span th:replace="~{fragments/layout :: clinicStatusBadge(${c.status})}"></span></td>
+                <td th:text="${#temporals.format(c.requestedAt, 'dd MMM yyyy')}">Date</td>
+                <td class="text-end text-nowrap">
+                    <form th:if="${c.status.name() != 'APPROVED'}" th:action="@{/admin/clinics/{id}/approve(id=${c.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-green">Approve</button>
+                    </form>
+                    <form th:if="${c.status.name() != 'REJECTED'}" th:action="@{/admin/clinics/{id}/reject(id=${c.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Switch off this clinic\'s access?');">
+                        <button type="submit" class="btn btn-sm btn-outline-clay"
+                                th:text="${c.status.name() == 'PENDING'} ? 'Reject' : 'Revoke access'">Reject</button>
+                    </form>
+                    <a th:href="@{/admin/clinics/{id}/edit(id=${c.id})}" class="btn btn-sm btn-outline-green"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    <form th:action="@{/admin/clinics/{id}/delete(id=${c.id})}" method="post" class="d-inline"
+                          onsubmit="return confirm('Delete this clinic and all of its replies? This cannot be undone.');">
+                        <button type="submit" class="btn btn-sm btn-outline-clay" title="Delete clinic"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(clinics)}">
+        <i class="bi bi-hospital"></i>
+        <h3 class="h5 mt-2">No clinics yet</h3>
+        <p class="mb-0">Clinics will appear here once they send a registration request.</p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

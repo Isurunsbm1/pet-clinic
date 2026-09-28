@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Register your clinic')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-4">
+    <div class="form-card">
+        <h1 class="h3 mb-1">Request clinic registration</h1>
+        <p class="mb-3">Tell us about your clinic. An administrator reviews every request before your account is switched on.</p>
+
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-info-circle me-1"></i>
+            You won't be able to log in until your request is approved. Use the email and password you choose below once you hear back.
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <form th:action="@{/register/clinic}" th:object="${form}" method="post" novalidate>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="clinicName" class="form-label">Clinic name</label>
+                    <input type="text" id="clinicName" class="form-control" th:field="*{clinicName}"
+                           th:classappend="${#fields.hasErrors('clinicName')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('clinicName')}" th:errors="*{clinicName}">Error</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="registrationNumber" class="form-label">Registration no.</label>
+                    <input type="text" id="registrationNumber" class="form-control" th:field="*{registrationNumber}" placeholder="e.g. VSC/1234">
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Clinic email (used to log in)</label>
+                    <input type="email" id="email" class="form-control" th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" autocomplete="email">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Contact number</label>
+                    <input type="tel" id="phone" class="form-control" th:field="*{phone}" placeholder="011 XXX XXXX"
+                           th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" autocomplete="tel">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Error</div>
+                </div>
+                <div class="col-md-8">
+                    <label for="address" class="form-label">Clinic address</label>
+                    <input type="text" id="address" class="form-control" th:field="*{address}"
+                           th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Error</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" id="city" class="form-control" th:field="*{city}"
+                           th:classappend="${#fields.hasErrors('city')} ? 'is-invalid'" placeholder="e.g. Kandy">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">Error</div>
+                </div>
+                <div class="col-12">
+                    <label for="description" class="form-label">About the clinic <span class="text-muted fw-normal">(services, opening hours)</span></label>
+                    <textarea id="description" class="form-control" rows="3" maxlength="1000" th:field="*{description}"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" th:field="*{password}"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" autocomplete="new-password">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="confirmPassword" class="form-label">Confirm password</label>
+                    <input type="password" id="confirmPassword" class="form-control" th:field="*{confirmPassword}"
+                           th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'" autocomplete="new-password">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Error</div>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                <button type="submit" class="btn btn-green btn-lg">Send registration request</button>
+                <a href="/" class="btn btn-outline-green btn-lg">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

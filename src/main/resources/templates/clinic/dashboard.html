@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Clinic panel')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="page-heading">
+        <div>
+            <h1 class="h2 mb-1" th:text="'Welcome, ' + ${clinic.clinicName}">Welcome</h1>
+            <p class="mb-0"><span th:text="${clinic.city}">City</span> &nbsp;<span th:replace="~{fragments/layout :: clinicStatusBadge(${clinic.status})}"></span></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/inquiries" class="btn btn-green"><i class="bi bi-chat-dots me-1"></i>Browse all questions</a>
+            <a href="/clinic/profile" class="btn btn-outline-green">Edit profile</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(openInquiries)}">0</div>
+                <div class="stat-label">Questions waiting for a reply</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${myAnswerCount}">0</div>
+                <div class="stat-label">Replies you've posted</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h4 mb-3">Questions waiting for a reply</h2>
+
+    <div th:if="${!#lists.isEmpty(openInquiries)}">
+        <th:block th:each="i : ${openInquiries}">
+            <a th:replace="~{fragments/layout :: inquiryRow(${i})}"></a>
+        </th:block>
+        <a href="/inquiries" class="btn btn-outline-green mt-2">See every question</a>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(openInquiries)}">
+        <i class="bi bi-check2-circle"></i>
+        <h3 class="h5 mt-2">All caught up</h3>
+        <p class="mb-3">Every question has at least one reply. You can still add to any conversation.</p>
+        <a href="/inquiries" class="btn btn-green">Browse the Q&amp;A board</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

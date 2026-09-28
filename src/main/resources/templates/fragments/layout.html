@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"/></head>
+<body>
+
+<!-- ===== <head> contents: use as <th:block th:replace="~{fragments/layout :: head('Page title')}"></th:block> ===== -->
+<th:block th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | VetConnect Sri Lanka'">VetConnect Sri Lanka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</th:block>
+
+<!-- ===== Navbar (menu changes with login state and role) ===== -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-vet sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/"><i class="bi bi-heart-pulse-fill me-2"></i>VetConnect<span class="accent">.lk</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clinics">Find a clinic</a></li>
+                <li class="nav-item" sec:authorize="hasAnyRole('CLINIC','PET_OWNER')"><a class="nav-link" href="/inquiries">Community Q&amp;A</a></li>
+                <li class="nav-item" sec:authorize="hasRole('PET_OWNER')"><a class="nav-link" href="/inquiries/new">Ask a question</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" href="/admin/dashboard">Admin panel</a></li>
+                <li class="nav-item" sec:authorize="hasRole('CLINIC')"><a class="nav-link" href="/clinic/dashboard">Clinic panel</a></li>
+                <li class="nav-item" sec:authorize="hasRole('PET_OWNER')"><a class="nav-link" href="/owner/dashboard">My dashboard</a></li>
+            </ul>
+            <ul class="navbar-nav align-items-lg-center">
+                <li class="nav-item" sec:authorize="!isAuthenticated()"><a class="nav-link" href="/register/owner">Pet owner sign up</a></li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()"><a class="nav-link" href="/register/clinic">Register your clinic</a></li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()"><a class="btn btn-brand btn-sm ms-lg-2 mt-2 mt-lg-0" href="/login">Log in</a></li>
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i><span sec:authentication="name">Account</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li sec:authorize="hasRole('CLINIC')"><a class="dropdown-item" href="/clinic/profile">Clinic profile</a></li>
+                        <li sec:authorize="hasRole('PET_OWNER')"><a class="dropdown-item" href="/owner/profile">My profile</a></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="px-3 py-1">
+                                <button class="btn btn-sm btn-outline-clay w-100" type="submit">Log out</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== Footer ===== -->
+<footer th:fragment="footer" class="site-footer">
+    <div class="container text-center">
+        <p class="mb-1"><i class="bi bi-heart-pulse-fill me-1"></i><strong>VetConnect Sri Lanka</strong> &mdash; connecting pet owners with registered veterinary clinics.</p>
+        <p class="small mb-0">Individual academic project built with Spring Boot, MySQL and Bootstrap.</p>
+    </div>
+</footer>
+
+<th:block th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</th:block>
+
+<!-- ===== Flash / error messages ===== -->
+<th:block th:fragment="alerts">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i><span th:text="${successMessage}">Success</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i><span th:text="${errorMessage}">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</th:block>
+
+<!-- ===== Badges ===== -->
+<span th:fragment="categoryBadge(cat)" class="badge badge-pill badge-category"
+      th:text="${#strings.capitalizeWords(#strings.toLowerCase(#strings.replace(cat,'_',' ')))}">Category</span>
+
+<span th:fragment="inquiryStatusBadge(status)" class="badge badge-pill"
+      th:classappend="${status.name() == 'OPEN'} ? 'badge-open' : (${status.name() == 'ANSWERED'} ? 'badge-answered' : 'badge-closed')"
+      th:text="${#strings.capitalize(#strings.toLowerCase(status))}">Status</span>
+
+<span th:fragment="clinicStatusBadge(status)" class="badge badge-pill"
+      th:classappend="${status.name() == 'PENDING'} ? 'badge-pending' : (${status.name() == 'APPROVED'} ? 'badge-approved' : 'badge-rejected')"
+      th:text="${#strings.capitalize(#strings.toLowerCase(status))}">Status</span>
+
+<!-- ===== One question in a list (used by Q&A board and both dashboards) ===== -->
+<a th:fragment="inquiryRow(i)" class="inquiry-row" th:href="@{/inquiries/{id}(id=${i.id})}">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+        <h3 th:text="${i.title}">Question title</h3>
+        <span th:replace="~{fragments/layout :: inquiryStatusBadge(${i.status})}"></span>
+    </div>
+    <p class="mb-2" th:text="${#strings.abbreviate(i.description, 160)}">Description</p>
+    <div class="d-flex flex-wrap align-items-center gap-3 inquiry-meta">
+        <span th:replace="~{fragments/layout :: categoryBadge(${i.category})}"></span>
+        <span th:if="${!#strings.isEmpty(i.petName)}"><i class="bi bi-tag me-1"></i><span th:text="${i.petName}">Pet</span><span th:if="${!#strings.isEmpty(i.petType)}" th:text="' (' + ${i.petType} + ')'"></span></span>
+        <span><i class="bi bi-person me-1"></i><span th:text="${i.petOwner.user.fullName}">Owner</span></span>
+        <span><i class="bi bi-chat-left-text me-1"></i><span th:text="${#lists.size(i.comments) == 1 ? '1 reply' : #lists.size(i.comments) + ' replies'}">0 replies</span></span>
+        <span><i class="bi bi-clock me-1"></i><span th:text="${#temporals.format(i.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span></span>
+    </div>
+</a>
+
+<!-- ===== Admin sub-navigation ===== -->
+<ul th:fragment="adminTabs(active)" class="nav admin-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'" href="/admin/dashboard">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" th:classappend="${active == 'clinics'} ? 'active'" href="/admin/clinics">Clinics</a></li>
+    <li class="nav-item"><a class="nav-link" th:classappend="${active == 'owners'} ? 'active'" href="/admin/owners">Pet owners</a></li>
+</ul>
+
+</body>
+</html>

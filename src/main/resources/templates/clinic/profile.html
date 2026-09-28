@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Clinic profile')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="form-card">
+        <h1 class="h3 mb-1">Clinic profile</h1>
+        <p class="mb-4">Pet owners see these details in the clinic directory and beside your replies.</p>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <dl class="detail-list row mb-2">
+            <div class="col-md-6">
+                <dt>Login email</dt>
+                <dd th:text="${clinic.user.email}">email</dd>
+            </div>
+            <div class="col-md-6">
+                <dt>Registration status</dt>
+                <dd><span th:replace="~{fragments/layout :: clinicStatusBadge(${clinic.status})}"></span></dd>
+            </div>
+        </dl>
+
+        <form th:action="@{/clinic/profile}" th:object="${form}" method="post">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="clinicName" class="form-label">Clinic name</label>
+                    <input type="text" id="clinicName" class="form-control" th:field="*{clinicName}" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="registrationNumber" class="form-label">Registration no.</label>
+                    <input type="text" id="registrationNumber" class="form-control" th:field="*{registrationNumber}">
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Contact number</label>
+                    <input type="tel" id="phone" class="form-control" th:field="*{phone}">
+                </div>
+                <div class="col-md-6">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" id="city" class="form-control" th:field="*{city}" required>
+                </div>
+                <div class="col-12">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" id="address" class="form-control" th:field="*{address}" required>
+                </div>
+                <div class="col-12">
+                    <label for="description" class="form-label">About the clinic</label>
+                    <textarea id="description" class="form-control" rows="4" maxlength="1000" th:field="*{description}"></textarea>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                <button type="submit" class="btn btn-green btn-lg">Save profile</button>
+                <a href="/clinic/dashboard" class="btn btn-outline-green btn-lg">Back to panel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

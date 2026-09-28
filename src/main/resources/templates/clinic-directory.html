@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Find a clinic')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container py-5">
+    <div class="page-heading">
+        <div>
+            <h1 class="h2 mb-1">Registered pet clinics</h1>
+            <p class="mb-0">Every clinic listed here has been verified and approved by an administrator.</p>
+        </div>
+        <a sec:authorize="hasRole('PET_OWNER')" href="/inquiries/new" class="btn btn-brand">Ask a question</a>
+        <a sec:authorize="!isAuthenticated()" href="/register/owner" class="btn btn-brand">Sign up to ask a question</a>
+    </div>
+
+    <div class="row g-4" th:if="${!#lists.isEmpty(clinics)}">
+        <div class="col-md-6 col-lg-4" th:each="c : ${clinics}">
+            <div class="clinic-card">
+                <span class="clinic-city mb-2" th:text="${c.city}">City</span>
+                <h2 class="h5 mt-2 mb-2" th:text="${c.clinicName}">Clinic name</h2>
+                <p class="mb-3" th:if="${!#strings.isEmpty(c.description)}" th:text="${#strings.abbreviate(c.description, 150)}">Description</p>
+                <ul class="list-unstyled mb-0 small">
+                    <li class="mb-1"><i class="bi bi-geo-alt me-2 text-brand"></i><span th:text="${c.address}">Address</span></li>
+                    <li class="mb-1" th:if="${!#strings.isEmpty(c.user.phone)}"><i class="bi bi-telephone me-2 text-brand"></i><span th:text="${c.user.phone}">Phone</span></li>
+                    <li class="mb-1"><i class="bi bi-envelope me-2 text-brand"></i><a th:href="'mailto:' + ${c.user.email}" th:text="${c.user.email}">Email</a></li>
+                    <li th:if="${!#strings.isEmpty(c.registrationNumber)}"><i class="bi bi-patch-check me-2 text-brand"></i>Reg. no. <span th:text="${c.registrationNumber}">Reg</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(clinics)}">
+        <i class="bi bi-hospital"></i>
+        <h2 class="h5 mt-2">No approved clinics yet</h2>
+        <p class="mb-3">Clinics appear here as soon as an administrator approves their registration request.</p>
+        <a href="/register/clinic" class="btn btn-green">Register your clinic</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

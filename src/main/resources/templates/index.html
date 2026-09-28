@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Home')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div th:if="${param.loggedOut != null}" class="alert alert-success rounded-0 mb-0 text-center">You have been logged out.</div>
+
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h1 class="display-heading">A question about your pet, answered by a real clinic.</h1>
+                <p class="lead">VetConnect brings pet owners and registered veterinary clinics across Sri Lanka onto one board. Ask about symptoms, vaccines or diet, and get a reply from a professional you can trust.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4" sec:authorize="!isAuthenticated()">
+                    <a href="/register/owner" class="btn btn-brand btn-lg"><i class="bi bi-chat-heart me-1"></i>Ask a vet a question</a>
+                    <a href="/register/clinic" class="btn btn-brand-outline btn-lg">Register your clinic</a>
+                </div>
+                <div class="d-flex flex-wrap gap-3 mt-4" sec:authorize="hasRole('PET_OWNER')">
+                    <a href="/inquiries/new" class="btn btn-brand btn-lg">Ask a new question</a>
+                    <a href="/owner/dashboard" class="btn btn-brand-outline btn-lg">My dashboard</a>
+                </div>
+                <div class="d-flex flex-wrap gap-3 mt-4" sec:authorize="hasRole('CLINIC')">
+                    <a href="/inquiries" class="btn btn-brand btn-lg">Answer questions</a>
+                    <a href="/clinic/dashboard" class="btn btn-brand-outline btn-lg">Clinic panel</a>
+                </div>
+                <div class="d-flex flex-wrap gap-3 mt-4" sec:authorize="hasRole('ADMIN')">
+                    <a href="/admin/dashboard" class="btn btn-brand btn-lg">Open admin panel</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-thread">
+                    <div class="hero-bubble question">
+                        <span class="label">Nadeesha, pet owner</span>
+                        <p class="mb-0">My cat Simba has been sneezing and skipped two meals. Should I be worried, or can I wait it out?</p>
+                    </div>
+                    <div class="hero-bubble reply">
+                        <span class="label">Green Paws Veterinary Clinic</span>
+                        <p class="mb-0">Keep him warm and offer water often. If it goes past 48 hours or he stops drinking, bring him in. It sounds like a mild respiratory infection.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <h2>How it works</h2>
+            <p>Three steps connect a worried pet owner with the right clinic.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="h5">Pet owners ask</h3>
+                    <p class="mb-0">Post a question about symptoms, vaccination schedules, diet or behaviour, with details about your pet.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="h5">Registered clinics answer</h3>
+                    <p class="mb-0">Only clinics an administrator has verified and approved can log in and reply, so advice comes from an accountable practice.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="h5">Your pet gets the right care</h3>
+                    <p class="mb-0">Read the reply, follow up with more questions, and download a summary to bring to your next visit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background:var(--brand-light);">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <h2>Running a pet clinic in Sri Lanka?</h2>
+                <p class="mb-4">Submit a registration request with your clinic's details. An administrator reviews every request before your clinic can log in and start answering pet owners, which keeps the board trustworthy for everyone.</p>
+                <a href="/register/clinic" class="btn btn-green btn-lg">Submit a registration request</a>
+            </div>
+            <div class="col-lg-5">
+                <div class="card-plain p-4">
+                    <h3 class="h6 mb-3"><i class="bi bi-shield-check me-1 text-brand"></i>Why the approval step?</h3>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb-2">Pet owners know every answer comes from a verified clinic.</li>
+                        <li class="mb-2">Admins can update or remove a clinic's access at any time.</li>
+                        <li>Advice on the board stays accountable and traceable.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title></title>
-    <th:block th:replace="{fragments/layout :: head('Login')}"></th:block>
+    <th:block th:replace="~{./fragments/layout :: head(title='Login')}"></th:block>
 </head>
 <body>
-<div th:replace="{fragments/layout :: navbar}"></div>
+<div th:replace="~{./fragments/layout :: navbar}"></div>
 
 <main class="container py-4">
     <div class="auth-card">
